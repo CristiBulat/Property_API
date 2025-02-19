@@ -1,6 +1,6 @@
-from sqlalchemy import Boolean, Integer, String, Float, Column, ForeignKey
+from sqlalchemy import Integer, String, Float, Column, ForeignKey
 from sqlalchemy.orm import relationship
-from app.database import Base, SessionLocal, engine
+from app.database import Base
 
 
 class Property(Base):
@@ -31,4 +31,3 @@ class Room(Base):
 
     def __repr__(self):
         return f"<Room(id={self.id}, name={self.name}, area={self.area}, property_id={self.property_id})>"
-
