@@ -21,10 +21,8 @@ class RoomCreate(RoomBase):
 
 
 class RoomUpdate(BaseModel):
-    id: Optional[int] = Field(None, description="Room ID (optional for updates)")
     name: Optional[str] = Field(None, description="Updated name of the room")
     area: Optional[float] = Field(None, gt=0, description="Updated area of the room")
-    property_id: Optional[int] = Field(None, description="Updated property associated with the room")
 
 
 # Property Schemas
