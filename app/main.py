@@ -33,17 +33,28 @@ async def create_property(
     db.refresh(db_property)
     return db_property
 
+
 @app.get('/properties', response_model=schemas.PaginatedProperties)
 async def list_properties(
-    page: int = Query(1, gt=0),
-    size: int = Query(10, gt=0),
-    db: Session = Depends(get_db)
+        page: int = Query(1, gt=0),
+        size: int = Query(10, gt=0),
+        price: float = Query(None, gt=0),
+        location: str = Query(None),
+        db: Session = Depends(get_db)
 ):
     skip = (page - 1) * size
-    total = db.query(models.Property).count()
-    properties = db.query(models.Property).offset(skip).limit(size).all()
+    query = db.query(models.Property)
 
-    return{
+    if price:
+        query = query.filter(models.Property.price <= price)
+
+    if location:
+        query = query.filter(models.Property.address.ilike(f"%{location}%"))
+
+    total = query.count()
+    properties = query.offset(skip).limit(size).all()
+
+    return {
         "items": properties,
         "total": total,
         "page": page,
@@ -79,6 +90,7 @@ async def update_property(
     db.refresh(db_property)
     return db_property
 
+
 @app.delete('/properties/{property_id}')
 async def delete_property(
         property_id: int,
@@ -95,7 +107,6 @@ async def delete_property(
 
 
 # Room CRUD Operations
-
 @app.post("/properties/{property_id}/rooms/", response_model=schemas.Room)
 async def create_room(
         property_id: int,
@@ -116,13 +127,19 @@ async def create_room(
 @app.get("/properties/{property_id}/rooms/", response_model=List[schemas.Room])
 async def list_rooms(
         property_id: int,
+        area: float = Query(None, gt=0),
         db: Session = Depends(get_db)
 ):
     property = db.query(models.Property).filter(models.Property.id == property_id).first()
     if property is None:
         raise HTTPException(status_code=404, detail="Property not found")
 
-    rooms = db.query(models.Room).filter(models.Room.property_id == property_id).all()
+    query = db.query(models.Room).filter(models.Room.property_id == property_id)
+
+    if area:
+        query = query.filter(models.Room.area <= area)
+
+    rooms = query.all()
     return rooms
 
 

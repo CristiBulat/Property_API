@@ -27,7 +27,7 @@ class Room(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     area = Column(Float, nullable=False)
-    property_id = Column(Integer, ForeignKey("properties.id"), nullable=False)
+    property_id = Column(Integer, ForeignKey("properties.id", ondelete="CASCADE"), nullable=False)
 
     property = relationship("Property", back_populates="rooms")
 
