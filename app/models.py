@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 
 
+# Property Model
 class Property(Base):
     __tablename__ = "properties"
 
@@ -19,6 +20,7 @@ class Property(Base):
         return f"<Property(id={self.id}, title={self.title}, price={self.price}, address={self.address})>"
 
 
+# Room Model
 class Room(Base):
     __tablename__ = "rooms"
 
