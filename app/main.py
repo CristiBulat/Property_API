@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app import models, schemas
 from app.database import SessionLocal, engine
-
+from app.auth import get_api_key
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -19,11 +19,13 @@ def get_db():
     finally:
         db.close()
 
+
 # Property CRUD Operations
 @app.post('/properties', response_model=schemas.Property)
 async def create_property(
     property: schemas.PropertyCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(get_api_key)
 ):
     db_property = models.Property(**property.dict())
     db.add(db_property)
@@ -81,6 +83,7 @@ async def update_property(
 async def delete_property(
         property_id: int,
         db: Session = Depends(get_db),
+        api_key: str = Depends(get_api_key)
 ):
     property = db.query(models.Property).filter(models.Property.id == property_id).first()
     if property is None:
